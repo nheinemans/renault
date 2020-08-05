@@ -16,34 +16,42 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
+  "iteration": 1596632660985,
   "links": [],
   "panels": [
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorPostfix": false,
-      "colorPrefix": false,
-      "colorValue": true,
-      "colors": [
-        "#299c46",
-        "rgba(237, 129, 40, 0.89)",
-        "#d44a3a"
-      ],
       "datasource": "InfluxDB Renault",
       "description": "Shows the latest updates from the InfluxDB database. If the Renault API is out, it will show an old time.",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "No data",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "dateTimeFromNow"
         },
         "overrides": []
-      },
-      "format": "dateTimeFromNow",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 2,
@@ -54,40 +62,23 @@
       "id": 20,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false,
-        "ymax": null,
-        "ymin": null
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Time$/",
+          "limit": 1,
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "7.1.1",
       "targets": [
         {
           "groupBy": [
@@ -96,15 +87,9 @@
                 "$__interval"
               ],
               "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
             }
           ],
-          "measurement": "percentage_battery",
+          "measurement": "battery",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -113,13 +98,13 @@
             [
               {
                 "params": [
-                  "batterypercentage"
+                  "percentage"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "mean"
+                "type": "last"
               }
             ]
           ],
@@ -132,20 +117,10 @@
           ]
         }
       ],
-      "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
       "title": "Last update",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "No data",
-          "value": "null"
-        }
-      ],
-      "valueName": "last_time"
+      "type": "stat"
     },
     {
       "cacheTimeout": null,
@@ -550,12 +525,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "InfluxDB Renault",
-      "decimals": 3,
+      "decimals": 0,
       "description": "Shows the total kilometers driven by the car.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "unit": "lengthkm"
+          "displayName": "km",
+          "unit": "none"
         },
         "overrides": []
       },
@@ -642,8 +618,8 @@
       },
       "yaxes": [
         {
-          "decimals": null,
-          "format": "lengthkm",
+          "decimals": 0,
+          "format": "none",
           "label": "",
           "logBase": 1,
           "max": null,
@@ -1151,241 +1127,6 @@
       "type": "stat"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "description": "Speed in latitude/longitude change per minute",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 27
-      },
-      "hiddenSeries": false,
-      "id": 32,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pluginVersion": "7.1.1",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "alias": "$col/h",
-          "groupBy": [
-            {
-              "params": [
-                "1m"
-              ],
-              "type": "time"
-            }
-          ],
-          "measurement": "car",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "latitude"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [],
-                "type": "difference"
-              },
-              {
-                "params": [
-                  "*60"
-                ],
-                "type": "math"
-              },
-              {
-                "params": [
-                  "latdiff"
-                ],
-                "type": "alias"
-              }
-            ],
-            [
-              {
-                "params": [
-                  "longitude"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [],
-                "type": "difference"
-              },
-              {
-                "params": [
-                  "*60"
-                ],
-                "type": "math"
-              },
-              {
-                "params": [
-                  "longdiff"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "vehicle",
-              "operator": "=~",
-              "value": "/^$Vehicle$/"
-            }
-          ]
-        },
-        {
-          "alias": "km/h",
-          "groupBy": [
-            {
-              "params": [
-                "1m"
-              ],
-              "type": "time"
-            }
-          ],
-          "measurement": "car",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "milage"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [],
-                "type": "difference"
-              },
-              {
-                "params": [
-                  "*60"
-                ],
-                "type": "math"
-              },
-              {
-                "params": [
-                  "ododiff"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "vehicle",
-              "operator": "=~",
-              "value": "/^$Vehicle$/"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Speed (beta)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "autoZoom": true,
       "datasource": null,
       "defaultLayer": "OpenStreetMap",
@@ -1399,7 +1140,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 27
       },
       "id": 30,
       "lineColor": "red",
@@ -1470,7 +1211,7 @@
       "type": "pr0ps-trackmap-panel"
     }
   ],
-  "refresh": "5m",
+  "refresh": "1m",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
@@ -1479,22 +1220,34 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "VF1AG000563197270",
-          "value": "VF1AG000563197270"
+          "selected": false,
+          "text": "G226SB",
+          "value": [
+            "G226SB"
+          ]
         },
         "datasource": "InfluxDB Renault",
         "definition": "show tag values with key = \"vehicle\"",
         "hide": 0,
-        "includeAll": false,
-        "label": "VIN",
-        "multi": false,
+        "includeAll": true,
+        "label": "",
+        "multi": true,
         "name": "Vehicle",
         "options": [
           {
-            "selected": true,
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
             "text": "VF1AG000563197270",
             "value": "VF1AG000563197270"
+          },
+          {
+            "selected": true,
+            "text": "G226SB",
+            "value": "G226SB"
           }
         ],
         "query": "show tag values with key = \"vehicle\"",
@@ -1530,5 +1283,5 @@
   "timezone": "",
   "title": "Renault ZOE",
   "uid": "HVc3h6EWz",
-  "version": 15
+  "version": 25
 }
