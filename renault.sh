@@ -4,15 +4,20 @@
 # Download https://github.com/jamesremuscat/pyze?fbclid=IwAR1KDSOIib6sIaQ1cGDUGKeNnceU2Kg1QICp1xUetomR6jFjONkjp1--CAc to /home/renault/
 # Make a cronjob that runs every 5 minutes for /home/renault/renault.sh
 
-vehicle=$VIN
+VIN=`pyze vehicles | grep $REG | awk {'print $NF'} | sed "s/.//;s/.$//"`
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: The Renault API is not working properly, could not get VIN number for vehicle $REG."
+  exit 1
+fi
+vehicle=$REG
 IP="192.168.1.2"
 PORT="8086"
 curl="/usr/bin/curl"
 FILE="/renault.txt"
 
 # Get metrics from Renault API into temp file
-echo "The renault.sh script has started and the data is being retrieved from Renault for vehicle VIN $vehicle."
-/usr/local/bin/pyze status --vin $vehicle --km >> $FILE
+echo "The renault.sh script has started and the data is being retrieved from Renault for registration $vehicle with VIN $VIN"
+/usr/local/bin/pyze status --vin $VIN --km > $FILE
 if [[ $? -ne 0 ]]; then
   echo "ERROR: The Renault API is not working properly, no metrics received."
   exit 1
