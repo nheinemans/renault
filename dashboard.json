@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1596632660985,
+  "iteration": 1596652661413,
   "links": [],
   "panels": [
     {
@@ -525,7 +525,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "InfluxDB Renault",
-      "decimals": 0,
+      "decimals": 1,
       "description": "Shows the total kilometers driven by the car.",
       "fieldConfig": {
         "defaults": {
@@ -618,7 +618,7 @@
       },
       "yaxes": [
         {
-          "decimals": 0,
+          "decimals": 1,
           "format": "none",
           "label": "",
           "logBase": 1,
@@ -669,7 +669,7 @@
         "thresholdMarkers": true
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 4,
         "x": 20,
         "y": 12
@@ -802,10 +802,10 @@
         "thresholdMarkers": true
       },
       "gridPos": {
-        "h": 5,
+        "h": 3,
         "w": 4,
         "x": 20,
-        "y": 17
+        "y": 16
       },
       "id": 16,
       "interval": null,
@@ -910,6 +910,87 @@
       "valueName": "current"
     },
     {
+      "cacheTimeout": null,
+      "datasource": "InfluxDB Renault",
+      "description": "Charging time needed to charge the battery to 100% (based on the charging capacity of the last used charging point).",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 0,
+          "mappings": [],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 19
+      },
+      "id": 22,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.1.1",
+      "targets": [
+        {
+          "alias": "",
+          "groupBy": [],
+          "measurement": "charging",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "table",
+          "select": [
+            [
+              {
+                "params": [
+                  "remainingtime"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "vehicle",
+              "operator": "=~",
+              "value": "/^$Vehicle$/"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Charging time",
+      "type": "stat"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -961,7 +1042,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Kilometers",
+          "alias": "range",
           "groupBy": [
             {
               "params": [
@@ -1047,68 +1128,161 @@
     },
     {
       "cacheTimeout": null,
-      "datasource": "InfluxDB Renault",
-      "description": "Charging time needed to charge the battery to 100% (based on the charging capacity of the last used charging point).",
+      "circleBackground": false,
+      "colorBackground": false,
+      "colorValue": false,
+      "datasource": null,
+      "defaultColor": "rgb(117, 117, 117)",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
-          "decimals": 0,
-          "mappings": [],
-          "nullValueMode": "connected",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "s"
+          "custom": {}
         },
         "overrides": []
       },
+      "format": "lengthkm",
+      "gauge": {
+        "maxValue": 400,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": false
+      },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 4,
         "x": 20,
-        "y": 22
+        "y": 23
       },
-      "id": 22,
+      "id": 32,
       "interval": null,
       "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
         },
-        "textMode": "auto"
-      },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "math": "range/percentage",
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
       "pluginVersion": "7.1.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sortOrder": "asc",
+      "sortOrderOptions": [
+        {
+          "text": "Ascending",
+          "value": "asc"
+        },
+        {
+          "text": "Descending",
+          "value": "desc"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
       "targets": [
         {
-          "alias": "",
-          "groupBy": [],
-          "measurement": "charging",
+          "alias": "range",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "battery",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
-          "resultFormat": "table",
+          "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "remainingtime"
+                  "range"
                 ],
                 "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "vehicle",
+              "operator": "=~",
+              "value": "/^$Vehicle$/"
+            }
+          ]
+        },
+        {
+          "alias": "percentage",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "battery",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "percentage"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [
+                  " / 100"
+                ],
+                "type": "math"
               }
             ]
           ],
@@ -1121,10 +1295,24 @@
           ]
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Charging time",
-      "type": "stat"
+      "title": "Theoretical Range",
+      "tooltip": {
+        "show": false
+      },
+      "type": "blackmirror1-singlestat-math-panel",
+      "valueFontSize": "80%",
+      "valueMappingColorBackground": "#767171",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "No data",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
     },
     {
       "autoZoom": true,
@@ -1283,5 +1471,5 @@
   "timezone": "",
   "title": "Renault ZOE",
   "uid": "HVc3h6EWz",
-  "version": 25
+  "version": 30
 }
