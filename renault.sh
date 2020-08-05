@@ -61,29 +61,29 @@ echo "INFO: AC state: $acstate"
 if [[ $batpercent =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "battery,vehicle=$vehicle percentage=$batpercent"
 else
-  echo "WARN: Battery percentage digit not found. No syncronization to InfluxDB."
+  echo "WARN: Battery percentage digit not found. No sync to InfluxDB."
 fi
 if [[ $energy =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "battery,vehicle=$vehicle energy=$energy"
 else
-  echo "WARN: Available energy digit not found. No syncronization to InfluxDB."
+  echo "WARN: Available energy digit not found. No sync to InfluxDB."
 fi
 if [[ $rangekm =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "battery,vehicle=$vehicle range=$rangekm"
 else
-  echo "WARN: Range not found. No syncronization to InfluxDB."
+  echo "WARN: Range not found. No sync to InfluxDB."
 fi
 
 # Temperature related variables to Influxdb
 if [[ $battemp =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "temperature,vehicle=$vehicle batterytemp=$battemp"
 else
-  echo "WARN: Battery temperature digit not found. No syncronization to InfluxDB."
+  echo "WARN: Battery temperature digit not found. No sync to InfluxDB."
 fi
 if [[ $exttemp =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "temperature,vehicle=$vehicle externaltemp=$exttemp"
 else
-  echo "WARN: External temperature digit not found. No syncronization to InfluxDB."
+  echo "WARN: External temperature digit not found. No sync to InfluxDB."
 fi
 
 # Charging related variables to Influxdb
@@ -102,24 +102,24 @@ fi
 if [[ $remainingtime =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle remainingtime=$remainingtime"
 else
-  echo "WARN: Remaining time digit not found. No syncronization to InfluxDB."
+  echo "WARN: Remaining time digit not found. No sync to InfluxDB."
 fi
 if [[ $chargerate =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle chargerate=$chargerate"
 else
-  echo "WARN: Charge rate digit not found. No syncronization to InfluxDB."
+  echo "WARN: Charge rate digit not found. No sync to InfluxDB."
 fi
 
 # Vehicle related variables to Influxdb
 if [[ $gpslat =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle latitude=$gpslat,longitude=$gpslong"
 else
-  echo "WARN: GPS location not found. No syncronization to InfluxDB."
+  echo "WARN: GPS location not found. No sync to InfluxDB."
 fi
 if [[ $mileage =~ [0-9] ]];then
-  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle milage=$mileage"
+  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle mileage=$mileage"
 else
-  echo "WARN: Milage not found. No syncronization to InfluxDB."
+  echo "WARN: Mileage not found. No sync to InfluxDB."
 fi
 if [[ $acstate = "Off" ]]
 then

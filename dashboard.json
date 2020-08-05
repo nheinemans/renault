@@ -583,7 +583,7 @@
             [
               {
                 "params": [
-                  "milage"
+                  "mileage"
                 ],
                 "type": "field"
               }
@@ -602,7 +602,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Total milage",
+      "title": "Total mileage",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1471,5 +1471,5 @@
   "timezone": "",
   "title": "Renault ZOE",
   "uid": "HVc3h6EWz",
-  "version": 30
+  "version": 31
 }
