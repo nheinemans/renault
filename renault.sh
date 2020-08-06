@@ -16,6 +16,13 @@ PORT="8086"
 curl="/usr/bin/curl"
 FILE="/renault.txt"
 
+# Create Influxdb CQ to calculate the max theoretical range (actual range / battery percentage)
+$curl -XPOST http://$IP:$PORT/query --data-binary 'q=CREATE CONTINUOUS QUERY "cq_mtr" ON "renault" BEGIN SELECT (mean("range")/mean("percentage")*100) AS "mtr" INTO "battery" FROM "battery" GROUP BY time(5m), * END'
+if [[ $? -ne 0 ]]; then
+  echo "WARN: Can't create the Influxdb Continuous Query"
+  exit 1
+fi
+
 # Get metrics from Renault API into temp file
 echo "INFO: Retrieving data from Renault for vehicle $vehicle with VIN $VIN"
 /usr/local/bin/pyze status --vin $VIN --km > $FILE
