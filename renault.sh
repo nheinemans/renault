@@ -121,7 +121,7 @@ if [[ $mileage =~ [0-9] ]];then
 else
   echo "WARN: Mileage not found. No sync to InfluxDB."
 fi
-if [[ $acstate = "Off" ]]
+if [[ $acstate = "off" ]]
 then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle acstate=0"
 else
