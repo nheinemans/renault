@@ -15,6 +15,42 @@ IP="192.168.1.2"
 PORT="8086"
 curl="/usr/bin/curl"
 FILE="/renault.txt"
+source home.sh
+
+deg2rad () {
+        bc -l <<< "$1 * 0.0174532925"
+}
+
+rad2deg () {
+        bc -l <<< "$1 * 57.2957795"
+}
+
+acos () {
+        pi="3.141592653589793"
+        bc -l <<<"$pi / 2 - a($1 / sqrt(1 - $1 * $1))"
+}
+
+distance () {
+        lat_1="$1"
+        lon_1="$2"
+        lat_2="$3"
+        lon_2="$4"
+        delta_lat=`bc <<<"$lat_2 - $lat_1"`
+        delta_lon=`bc <<<"$lon_2 - $lon_1"`
+        lat_1="`deg2rad $lat_1`"
+        lon_1="`deg2rad $lon_1`"
+        lat_2="`deg2rad $lat_2`"
+        lon_2="`deg2rad $lon_2`"
+        delta_lat="`deg2rad $delta_lat`"
+        delta_lon="`deg2rad $delta_lon`"
+
+        distance=`bc -l <<< "s($lat_1) * s($lat_2) + c($lat_1) * c($lat_2) * c($delta_lon)"`
+        distance=`acos $distance`
+        distance="`rad2deg $distance`"
+        distance=`bc -l <<< "$distance * 60 * 1.85200"`
+        distance=`bc <<<"scale=4; $distance / 1"`
+        echo $distance
+}
 
 # Create Influxdb CQ to calculate the max theoretical range (actual range / battery percentage)
 $curl -XPOST http://$IP:$PORT/query --data-binary 'q=CREATE CONTINUOUS QUERY "cq_mtr" ON "renault" BEGIN SELECT (mean("range")/mean("percentage")*100) AS "mtr" INTO "battery" FROM "battery" GROUP BY time(5m), * END'
@@ -46,9 +82,9 @@ exttemp=`cat $FILE | grep "^External temperature" | sed 's/[^0-9.]*//g'`
 echo "INFO: External temperature: $exttemp"
 
 # Charging related variables
-charging=`cat $FILE | grep "Charging state" | awk '{print $3}'`
+charging=`cat $FILE | grep "^Charging state" | awk '{$1=$2=""; print $0}' | sed 's/^ *//g'`
 echo "INFO: Charging state: $charging"
-pluggedin=`cat $FILE | grep "Plug state" | awk '{print $3}'`
+pluggedin=`cat $FILE | grep "^Plug state" | awk '{$1=$2=""; print $0}' | sed 's/^ *//g'`
 echo "INFO: Plugged state: $pluggedin"
 remainingtime=`cat $FILE | grep "^Time remaining" | awk '{print $3}' | awk -F: {'print $1*3600+$2*60'} `
 echo "INFO: Remaining charging time (seconds): $remainingtime"
@@ -58,7 +94,7 @@ echo "INFO: Charge rate (kW): $chargerate"
 # Car related variables
 gpslat=`cat $FILE | grep Location | awk '{print $2}' | awk -F, {'print $1'} `
 gpslong=`cat $FILE | grep Location | awk '{print $2}' | awk -F, {'print $2'} `
-echo "INFO: GPS location (long/lat): $gpslat,$gpslong"
+echo "INFO: GPS location (lat/long): $gpslat,$gpslong"
 mileage=`cat $FILE | grep "^Total mileage" | sed 's/[^0-9.]*//g'`
 echo "INFO: Mileage (km): $mileage"
 acstate=`cat $FILE | grep "AC state" | awk '{print $3}'`
@@ -94,32 +130,35 @@ else
 fi
 
 # Charging related variables to Influxdb
-if [ $charging = "Not" ]
+if [[ $charging = "Charging" ]]
 then
-  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle charging=0"
-else
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle charging=1"
+  if [[ $remainingtime =~ [0-9] ]];then
+    $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle remainingtime=$remainingtime"
+  fi
+  if [[ $chargerate =~ [0-9] ]];then
+    $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle chargerate=$chargerate"
+  fi
+else
+  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle charging=0"
 fi
-if [ $pluggedin = "Unplugged" ]
+if [[ $pluggedin = "Unplugged" ]]
 then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle pluggedin=0"
 else
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle pluggedin=1"
 fi
-if [[ $remainingtime =~ [0-9] ]];then
-  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle remainingtime=$remainingtime"
-else
-  echo "WARN: Remaining time digit not found. No sync to InfluxDB."
-fi
-if [[ $chargerate =~ [0-9] ]];then
-  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "charging,vehicle=$vehicle chargerate=$chargerate"
-else
-  echo "WARN: Charge rate digit not found. No sync to InfluxDB."
-fi
 
 # Vehicle related variables to Influxdb
 if [[ $gpslat =~ [0-9] ]];then
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle latitude=$gpslat,longitude=$gpslong"
+  if [[ $gpslong = $homelong ]] && [[ $gpslat = $homelat ]]; then
+    fromhome=0
+  else
+    fromhome=`distance $gpslong $gpslat $homelong $homelat`
+  fi
+  echo "INFO: Distance from home (km): $fromhome"
+  $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle fromhome=$fromhome"
 else
   echo "WARN: GPS location not found. No sync to InfluxDB."
 fi
