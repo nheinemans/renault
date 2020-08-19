@@ -4,6 +4,8 @@
 # Download https://github.com/jamesremuscat/pyze?fbclid=IwAR1KDSOIib6sIaQ1cGDUGKeNnceU2Kg1QICp1xUetomR6jFjONkjp1--CAc to /home/renault/
 # Make a cronjob that runs every 5 minutes for /home/renault/renault.sh
 
+date
+
 echo "INFO: Looking up vehicle with registration $REG in your Renault account."
 VIN=`pyze vehicles | grep $REG | awk {'print $NF'} | sed "s/.//;s/.$//"`
 if [[ $? -ne 0 ]]; then
@@ -51,13 +53,6 @@ distance () {
         distance=`bc <<<"scale=4; $distance / 1"`
         echo $distance
 }
-
-# Create Influxdb CQ to calculate the max theoretical range (actual range / battery percentage)
-$curl -XPOST http://$IP:$PORT/query --data-binary 'q=CREATE CONTINUOUS QUERY "cq_mtr" ON "renault" BEGIN SELECT (mean("range")/mean("percentage")*100) AS "mtr" INTO "battery" FROM "battery" GROUP BY time(5m), * END'
-if [[ $? -ne 0 ]]; then
-  echo "WARN: Can't create the Influxdb Continuous Query"
-  exit 1
-fi
 
 # Get metrics from Renault API into temp file
 echo "INFO: Retrieving data from Renault for vehicle $vehicle with VIN $VIN"
@@ -155,7 +150,11 @@ if [[ $gpslat =~ [0-9] ]];then
   if [[ $gpslong = $homelong ]] && [[ $gpslat = $homelat ]]; then
     fromhome=0
   else
-    fromhome=`distance $gpslong $gpslat $homelong $homelat`
+    if [[ $homelat =~ [0-9] ]] && [[ $homelong =~ [0-9] ]];then
+      fromhome=`distance $gpslong $gpslat $homelong $homelat`
+	else
+	  fromhome=0
+	fi
   fi
   echo "INFO: Distance from home (km): $fromhome"
   $curl -XPOST http://$IP:$PORT/write?db=renault --data-binary "car,vehicle=$vehicle fromhome=$fromhome"

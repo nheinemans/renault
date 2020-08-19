@@ -23,3 +23,13 @@ docker run --rm renault pyze vehicles
 ```
 docker run --rm -e VIN=<VIN> renault
 ```
+
+6. Create this CQ in influxdb to calculate the max theoretical range (km):
+```
+CREATE CONTINUOUS QUERY "cq_mtr" ON "renault" BEGIN SELECT (mean("range")/mean("percentage")*100) AS "mtr" INTO "battery" FROM "battery" GROUP BY time(5m), * END
+```
+
+6. Only for ZE50 models, create this CQ in influxdb to calculate the cars efficiency (kWh/km):
+```
+CREATE CONTINUOUS QUERY "cq_kwhperkm" ON "renault" BEGIN select mean("energy")/mean("range") AS "kwhperkm" INTO "battery" from battery group by time(5m), * END
+```
